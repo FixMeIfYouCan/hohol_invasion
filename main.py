@@ -8,7 +8,7 @@ class AlienInvasion:
     def __init__(self):
         pygame.init()
         self.settings = Settings()
-        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height), pygame.FULLSCREEN)
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self)
         self.clock = pygame.time.Clock()
@@ -26,24 +26,37 @@ class AlienInvasion:
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    self.ship.moving_right = True
-            
-                elif event.key == pygame.K_LEFT:
-                    self.ship.moving_left = True
-
+                self._key_down_events(event)
             elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_RIGHT:
-                    self.ship.moving_right = False
-            
-                elif event.key == pygame.K_LEFT:
-                    self.ship.moving_left = False
-        
+                self._key_up_events(event)
         self.clock.tick(self.FPS)
 
-    
+    def _key_down_events(self, event):
+        if event.key == pygame.K_RIGHT:
+            self.ship.moving_right = True
+        elif event.key == pygame.K_LEFT:
+            self.ship.moving_left = True
+        elif event.key == pygame.K_UP:
+            self.ship.moving_up = True
+        elif event.key == pygame.K_DOWN:
+            self.ship.moving_down = True
+        elif event.key == pygame.K_q:
+            sys.exit()
+
+    def _key_up_events(self, event):
+        if event.key == pygame.K_RIGHT:
+            self.ship.moving_right = False
+        elif event.key == pygame.K_LEFT:
+            self.ship.moving_left = False
+        elif event.key == pygame.K_UP:
+            self.ship.moving_up = False
+        elif event.key == pygame.K_DOWN:
+            self.ship.moving_down = False
+        elif event.key == pygame.K_q:
+            sys.exit()
+
     def _update_screen(self):
-        self.screen.blit(self.settings.bg, (0, 0))
+        self.screen.blit(self.settings.bg, (pygame.FULLSCREEN, pygame.FULLSCREEN))
         self.ship.blitme()
         pygame.display.flip()
 
