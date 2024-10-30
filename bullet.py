@@ -9,11 +9,12 @@ class Bullet(Sprite):
         self.screen_rect = ai_game.screen.get_rect()
         self.screen = ai_game.screen
         self.settings = ai_game.settings
-        self.image = pygame.image.load('images/ship2.png')
-        DEFAULT_IMAGE_SIZE = (20,25)
+        self.image = pygame.image.load('images/geranka.png')
+        self.image = pygame.transform.rotate(self.image, 125)
+        DEFAULT_IMAGE_SIZE = (50, 75)
         self.image = pygame.transform.scale(self.image, DEFAULT_IMAGE_SIZE)
-        self.rect = self.image.get_rect()
-        self.rect.midbottom = self.screen_rect.midbottom
+        self.rect = pygame.Rect(0, 0, DEFAULT_IMAGE_SIZE[0], DEFAULT_IMAGE_SIZE[1])
+        self.rect.midtop = ai_game.ship.rect.midtop
         self.y = float(self.rect.y)
     
     def update(self):
