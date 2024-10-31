@@ -12,3 +12,4 @@ class Settings():
         self.bg = self.image
         self.ship_speed = 10
         self.bullet_speed = 10
+        self.bullet_allowed = 3
