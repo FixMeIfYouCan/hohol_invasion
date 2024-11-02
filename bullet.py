@@ -16,10 +16,15 @@ class Bullet(Sprite):
         self.rect = pygame.Rect(0, 0, DEFAULT_IMAGE_SIZE[0], DEFAULT_IMAGE_SIZE[1])
         self.rect.midtop = ai_game.ship.rect.midtop
         self.y = float(self.rect.y)
+        self.x = float(self.rect.x)
     
     def update(self):
-        self.y -= self.settings.bullet_speed
-        self.rect.y = self.y
+        # self.y -= self.settings.bullet_speed
+        # self.rect.y = self.y
+
+        self.x -= self.settings.bullet_speed
+        self.x += self.settings.bullet_speed
+        self.rect.x = self.x
 
     def draw_bullet(self):
        self.screen.blit(self.image, self.rect)
