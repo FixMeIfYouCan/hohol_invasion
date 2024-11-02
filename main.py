@@ -24,7 +24,8 @@ class AlienInvasion:
             self._check_events()
             self.ship.update()
             self._update_bullets()
-            self._update_screen()
+            self._update_aliens()
+            self._update_screen() 
 
     def _check_events(self):
         for event in pygame.event.get():
@@ -47,6 +48,8 @@ class AlienInvasion:
             self.ship.moving_down = True
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+        elif event.key == pygame.K_RALT:
+            self._fire_bullet_side()
         elif event.key == pygame.K_q or event.key == "й":
             sys.exit()
 
@@ -60,32 +63,68 @@ class AlienInvasion:
         elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
             self.ship.moving_down = False
 
-    
+
     def _fire_bullet(self):
         if len(self.bullets) < self.settings.bullet_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
+
+    def _fire_bullet_side(self):
+        if len(self.bullets) < self.settings.bullet_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+
 
     def _update_bullets(self):
         self.bullets.update()
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+        self._check_bullet_alien_collision()
+
+    def _check_bullet_alien_collision(self):
+        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        if not self.aliens:
+            self.bullets.empty()
+            self._create_fleet
     
     def _create_fleet(self):
         alien = Alien(self)
-        alien_width = alien.rect.width
+        alien_width, alien_height = alien.rect.size
         available_space_x = self.settings.screen_width - (2 * alien_width)
+        ship_height = self.ship.rect.height
+        available_space_y = (self.settings.screen_height - (3 * alien_height) - ship_height)
+        number_rows = available_space_y // (2 * alien_height)
         number_aliens_x = available_space_x // (2 * alien_width)
-        for alien_number in range(number_aliens_x):
-            self._create_alien(alien_number)
+        for row_number in range(number_rows):
+            for alien_number in range(number_aliens_x):
+                self._create_alien(alien_number, row_number)
 
-    def _create_alien(self, alien_number):
+    def _check_fleet_edges(self):
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._check_fleet_directions()
+                break
+    
+    def _check_fleet_directions(self):
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+            self.settings.fleet_direction *= -1
+
+    def _create_alien(self, alien_number, row_number):
         alien = Alien(self)
-        alien_width = alien.rect.width
+        alien_width, alien_height = alien.rect.size
         alien.x = alien_width + 2 * alien_width * alien_number
         alien.rect.x = alien.x
+        alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
         self.aliens.add(alien)
+    
+    def _update_aliens(self):
+        self._check_fleet_edges()
+        self.aliens.update()
 
     def _update_screen(self):
         self.screen.blit(self.settings.bg, (0, 0))
